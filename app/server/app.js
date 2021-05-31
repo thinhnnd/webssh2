@@ -29,7 +29,10 @@ const { setupSession } = require('./setupSession');
 const appSocket = require('./socket');
 const expressOptions = require('./expressOptions');
 const safeShutdown = require('./safeShutdown');
-
+const bp = require('body-parser');
+// parse application/json
+app.use(bp.json());
+app.use(bp.urlencoded({ extended: true }));
 // Static credentials strategy
 // when config.user.overridebasic is true, those credentials
 // are used instead of HTTP basic auth.
@@ -141,6 +144,16 @@ app.get(
     res.sendFile(path.join(path.join(publicPath, 'client.htm')));
   }
 );
+
+app.get('/home', (req, res) => {
+  res.sendFile(path.join(path.join(publicPath, 'home.html')));
+});
+
+app.post('/connect-ssh', (req, res) => {
+  console.log('req', req);
+  const host = req.body['host'];
+  res.redirect(`/ssh/host/${host}`);
+});
 
 // express error handling
 app.use((req, res) => {
